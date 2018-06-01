@@ -3,6 +3,9 @@
 #include <Python.h>
 #include <numpy/ndarrayobject.h>
 #include <vector>
+#include <iostream>
+#include <map>
+#include <string>
 
 using namespace std;
 
@@ -14,8 +17,11 @@ static PyObject* compare_xtalcomp( PyObject *self, PyObject *args )
   PyObject* symbs2=nullptr;
   PyObject* cell1_raw=nullptr;
   PyObject* cell2_raw=nullptr;
+  double cart_tol;
+  double ang_tol;
+  int reduce_to_primitive=0;
 
-  if ( !PyArg_ParseTuple( args, "OOOO", &pos1, &pos2, &symbs1, &symbs2, &cell1_raw, &cell2_raw) )
+  if ( !PyArg_ParseTuple( args, "OOOOOOddi", &pos1, &pos2, &symbs1, &symbs2, &cell1_raw, &cell2_raw, &cart_tol, &ang_tol, &reduce_to_primitive) )
   {
     PyErr_SetString( PyExc_TypeError, "Could not parse arguments" );
     return NULL;
@@ -41,18 +47,17 @@ static PyObject* compare_xtalcomp( PyObject *self, PyObject *args )
   vector<XcVector> xc_pos2;
   vector<unsigned int> types1;
   vector<unsigned int> types2;
+  map<string,unsigned int> symb_lut;
   get_positions(pos1, xc_pos1);
   get_positions(pos2, xc_pos2);
-  get_types(symbs1, types1);
-  get_types(symbs2, types2);
+  get_types(symbs1, types1, symb_lut);
+  get_types(symbs2, types2, symb_lut);
 
   bool match = XtalComp::compare(xc_cell1, types1, xc_pos1,
                                  xc_cell2, types2, xc_pos2,
-                                 NULL, 0.05, 0.25);
+                                 NULL, cart_tol, ang_tol, reduce_to_primitive);
 
-  Py_DECREF(cell1_raw);
   Py_DECREF(cell1);
-  Py_DECREF(cell2_raw);
   Py_DECREF(cell2);
   if ( match )
   {

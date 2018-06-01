@@ -1,4 +1,3 @@
-
 #include "xc_tools.hpp"
 #include <map>
 #include <Python.h>
@@ -24,11 +23,15 @@ void get_positions( PyObject *pos_raw, vector<XcVector> &xc_pos )
   Py_DECREF(pos);
 }
 
-void get_types( PyObject* symbs, vector<unsigned int> &types)
+void get_types(PyObject* symbs, vector<unsigned int> &types, map<string,unsigned int> &symb_lut)
 {
-  map<string,unsigned int> uid;
   unsigned int size = PyList_Size(symbs);
-  unsigned int next_id = 0;
+  unsigned int next_id = 1;
+  for ( auto iter=symb_lut.begin();iter!=symb_lut.end();++iter )
+  {
+    if ( iter->second >= next_id ) next_id = iter->second+1;
+  }
+  
   for (unsigned int i=0;i<size;i++ )
   {
     string symbol;
@@ -37,12 +40,11 @@ void get_types( PyObject* symbs, vector<unsigned int> &types)
     #else
       symbol = PyString_AsString(PyList_GetItem(symbs,i));
     #endif
-
-    if ( uid.find(symbol) == uid.end() )
+    if ( symb_lut.find(symbol) == symb_lut.end() )
     {
       // New symbol
-      uid[symbol] = next_id++;
+      symb_lut[symbol] = next_id++;
     }
-    types.push_back(uid[symbol]);
+    types.push_back(symb_lut[symbol]);
   }
 }
