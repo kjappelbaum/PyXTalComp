@@ -1,7 +1,7 @@
 #ifndef XC_TOOLS_H
 #define XC_TOOLS_H
 #include <Python.h>
-#include <xtalcomp.h>
+#include <xtalcomp/xtalcomp.h>
 #include <vector>
 
 /** Reads the position array from an atoms object */
