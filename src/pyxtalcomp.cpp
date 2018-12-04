@@ -75,16 +75,16 @@ static PyMethodDef pyxtalcomp_methods[] = {
   static struct PyModuleDef pyxtalcomp = {
     PyModuleDef_HEAD_INIT,
     "pyxtalcomp_cpp",
-    NULL, // TODO: Write documentation string here
+    "this is the python 3 version", 
     -1,
     pyxtalcomp_methods
   };
 #endif
 
 #if PY_MAJOR_VERSION >= 3
-  PyMODINIT_FUNC PyInit_pyxtalcomp(void)
+  PyMODINIT_FUNC PyInit_pyxtalcomp_cpp(int)
   {
-    PyObject* module = PyModule_Create( &pyxtalcomp );
+    PyObject* module = PyModule_Create( &pyxtalcomp);
     import_array();
     return module;
   };
