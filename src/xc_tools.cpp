@@ -6,6 +6,24 @@
 
 using namespace std;
 
+#if PY_MAJOR_VERSION >= 3
+int get_positions( PyObject *pos_raw, vector<XcVector> &xc_pos )
+{
+  import_array();
+  char* format=NULL;
+  PyObject *pos = PyArray_FROM_OTF(pos_raw, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY );
+  npy_intp* dims = PyArray_DIMS(pos);
+  for (unsigned int site=0;site<dims[0];site++)
+  {
+    double x = *static_cast<double*>(PyArray_GETPTR2(pos,site,0));
+    double y = *static_cast<double*>(PyArray_GETPTR2(pos,site,1));
+    double z = *static_cast<double*>(PyArray_GETPTR2(pos,site,2));
+    XcVector vec(x,y,z);
+    xc_pos.push_back(vec);
+  };
+  Py_DECREF(pos);
+}
+#else 
 void get_positions( PyObject *pos_raw, vector<XcVector> &xc_pos )
 {
   import_array();
@@ -22,6 +40,7 @@ void get_positions( PyObject *pos_raw, vector<XcVector> &xc_pos )
   };
   Py_DECREF(pos);
 }
+#endif
 
 void get_types(PyObject* symbs, vector<unsigned int> &types, map<string,unsigned int> &symb_lut)
 {

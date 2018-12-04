@@ -1,14 +1,18 @@
 #ifndef XC_TOOLS_H
 #define XC_TOOLS_H
 #include <Python.h>
-#include <xtalcomp/xtalcomp.h>
+#include <xtalcomp.h>
 #include <vector>
 #include <map>
 #include <string>
 #include <iostream>
 
 /** Reads the position array from an atoms object */
+#if PY_MAJOR_VERSION >= 3
+int get_positions( PyObject* atoms, std::vector<XcVector> &pos );
+#else
 void get_positions( PyObject* atoms, std::vector<XcVector> &pos );
+#endif 
 
 /** Converts symbols to types */
 void get_types( PyObject *atoms, std::vector<unsigned int> &types, std::map<std::string,unsigned int> &symb_lut );

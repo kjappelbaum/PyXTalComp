@@ -1,4 +1,4 @@
-#include <xtalcomp/xtalcomp.h>
+#include <xtalcomp.h>
 #include "xc_tools.hpp"
 #include <Python.h>
 #include <numpy/ndarrayobject.h>
